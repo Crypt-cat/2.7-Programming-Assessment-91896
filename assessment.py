@@ -1,6 +1,9 @@
-import os, time, sys
+import os, time, sys, random
 
 os.system("clear")
+
+user_money = 0
+star_rating = 0
 
 
 class Burger:
@@ -13,23 +16,23 @@ class Burger:
 
 
 """Each burger has a list of ingredients, the order of ingredients in the list is [Beef Patty, Chicken Patty, Veggie Patty, Bacon, Cheese, Lettuce, Tomato, Onion, Ketchup, Aioli, Brewster Sauce]
-yes/no represents if the ingredient is required for that specific burger or not.
+if the ingredient is present in the list, it means it's part of its recipe. If the ingredient is not there, it is not needed.
 """
-cheeseburger = Burger("Cheeseburger", ["yes", "no", "no", "no", "yes", "no", "no", "yes", "yes", "no", "no"], 7)
-bacon_burger = Burger("Bacon Burger", ["yes", "no", "no", "yes", "no", "no", "no", "yes", "yes", "no", "no"], 9)
-chicken_burger = Burger("Chicken Burger", ["no", "yes", "no", "no", "no", "yes", "no", "no", "no", "yes", "no"], 8)
-veggie_burger = Burger("Veggie Burger", ["no", "no", "yes", "no", "no", "yes", "yes", "no", "no", "yes","no"], 10)
-classic_burger = Burger("Classic Burger", ["yes", "no", "no", "no", "yes", "yes", "yes", "yes", "yes", "no", "no"], 11)
-blt_burger = Burger("BLT Burger", ["no", "no", "no", "yes", "no", "yes", "yes", "no", "no", "yes", "no"], 8.5)
-brewster_burger = Burger("Brewster Burger", ["yes", "no", "no", "yes", "yes", "yes", "yes", "yes", "yes", "no", "yes"], 13.5)
-all_burgers = [cheeseburger, bacon_burger, chicken_burger, veggie_burger, classic_burger, blt_burger, brewster_burger]
+cheeseburger = Burger("Cheeseburger", ["Beef Patty", "Cheese", "Onion", "Ketchup"], 7)
+bacon_burger = Burger("Bacon Burger", ["Beef Patty", "Bacon", "Onion", "Ketchup"], 9)
+chicken_burger = Burger("Chicken Burger", ["Chicken Patty", "Lettuce", "Aioli"], 8)
+veggie_burger = Burger("Veggie Burger", ["Veggie Patty", "Lettuce", "Tomato", "Aioli"], 10)
+classic_burger = Burger("Classic Burger", ["Beef Patty", "Cheese", "Lettuce", "Tomato", "Onion", "Ketchup"], 11)
+blt_burger = Burger("BLT Burger", ["Bacon", "Lettuce", "Tomato", "Aioli"], 8.5)
+brewster_burger = Burger("Brewster Burger", ["Beef Patty", "Bacon", "Cheese", "Lettuce", "Tomato", "Onion", "Brewster Sauce"], 13.5)
+current_burgers = [cheeseburger, bacon_burger, chicken_burger, veggie_burger, classic_burger, blt_burger]
 
 
 def reveal_text(range):
     """"""
     for c in range:
         sys.stdout.write(c)
-        time.sleep(0.10)
+        time.sleep(0.06)
         sys.stdout.flush()
 
 
@@ -48,7 +51,7 @@ def get_int(question):
 
 def get_ingredient(question):
     while True:
-        temp_ingredient = get_int("1. Yes\n2. No\n\n> ")
+        temp_ingredient = get_int(f"{question}\n\n1. Yes\n2. No\n\n> ")
         os.system("clear")
         if not temp_ingredient in [1, 2]:
             print("Invalid input.")
@@ -61,7 +64,7 @@ def get_ingredient(question):
 
 def menu():
     while True:
-        user_input = get_int("\n\nWelcome to Brewster's Burgers:\n\n1. Take an order\n2. Show ingredients list\n3. Upgrades\n4. Evaluate star rating\n5. Exit\n\n> ")
+        user_input = get_int("Welcome to Brewster's Burgers!\n\n1. Take an order\n2. Show ingredients list\n3. Upgrades\n4. Evaluate star rating\n5. Exit\n\n> ")
         if not user_input in [1, 2, 3, 4, 5]:
             print("Invalid option.")
             time.sleep(2)
@@ -82,11 +85,42 @@ def menu():
 
 
 def ingredients_list():
-    print(f"Memorise the burger's ingredients to earn money from your orders!\n\n| {'Burger Type':16s}| B. Patty | C. Patty | V. Patty | Bacon | Cheese | Lettuce | Tomato | Onion | Ketchup | Aioli | Brewster Sauce |\n|-----------------|----------|----------|----------|-------|--------|---------|--------|-------|---------|-------|----------------|")
-    for burger in all_burgers:
-        print(f"| {burger.burger_type:16s}| {burger.ingredients[0]:8s} | {burger.ingredients[1]:8s} | {burger.ingredients[2]:8s} | {burger.ingredients[3]:5s} | {burger.ingredients[4]:6s} | {burger.ingredients[5]:7s} | {burger.ingredients[6]:6s} | {burger.ingredients[7]:5s} | {burger.ingredients[8]:7s} | {burger.ingredients[9]:5s} | {burger.ingredients[10]:15s}|\n|-----------------|----------|----------|----------|-------|--------|---------|--------|-------|---------|-------|----------------|")
+    print(f"Memorise the burger's ingredients to earn money from your orders!\n\n| {'Burger Type:':16s}| Ingredients:\n|-----------------|-----------------------------------------------------------------------------------")
+    for burger in current_burgers:
+        print(f"| {burger.burger_type:16s}| {burger.ingredients}\n|-----------------|-----------------------------------------------------------------------------------")
+    print("\n")
 
+
+def take_order():
+    global user_money
+    global star_rating
+    customer_order = random.choice(current_burgers)
+    correct_ingredients = customer_order.ingredients
+    reveal_text(f"Hi, could I please get the {customer_order.burger_type}?")
+    time.sleep(3)
+    os.system("clear")
+    ingredients = ["Beef Patty", "Chicken Patty", "Veggie Patty", "Bacon", "Cheese", "Lettuce", "Tomato", "Onion", "Ketchup", "Aioli", "Brewster Sauce"]
+    user_order = []
+    for ing in ingredients:
+        temp_ingredient = get_ingredient(f"Does the {customer_order.burger_type} use {ing} in it?")
+        if temp_ingredient == 1:
+            user_order.append(ing)
+    if correct_ingredients == user_order:
+        reveal_text("Thank you for getting my order correct!")
+        time.sleep(3)
+        os.system("clear")
+        user_money = user_money + customer_order.price
+        if star_rating < 5:
+            star_rating = star_rating + 1
+    else:
+        reveal_text("This isn't what I ordered!")
+        time.sleep(3)
+        os.system("clear")
+        if star_rating > 0:
+            star_rating = star_rating - 1
 
 while True:
+    print(star_rating)
+    print(user_money)
     menu()
     
